@@ -16,7 +16,7 @@ class Client
         $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if(socket_connect($this->socket, $host, $port) === false){
             socket_close($this->socket);
-            throw new \Exception('create socket error', socket_last_error());
+            throw new \Exception('create socket error: ', socket_last_error());
         }
     }
 
@@ -37,7 +37,7 @@ class Client
 
         if($write === false){
             socket_close($this->socket);
-            $message = sprintf("write socket error:%s", socket_strerror(socket_last_error()));
+            $message = sprintf("write socket error: %s", socket_strerror(socket_last_error()));
             throw new \Exception($message, socket_last_error());
         }
 
