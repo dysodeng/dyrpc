@@ -1,7 +1,7 @@
 <?php
-namespace DyRpc;
+namespace DyRpc\JsonRpc;
 
-class JsonRpcClient
+class Client
 {
     private $socket = null;
 
