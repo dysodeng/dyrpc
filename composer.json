@@ -1,0 +1,18 @@
+{
+    "name": "dy/rpc",
+    "description": "simple jsonrpc client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "浮梦逍遥",
+            "email": "dysodengs@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "DyRpc\\": "src/"
+        }
+    }
+}
