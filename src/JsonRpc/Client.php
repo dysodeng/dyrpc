@@ -45,13 +45,19 @@ class Client
 
         $rspBuffer = socket_read($this->socket, 65536);
 
-        socket_close($this->socket);
-
         if($rspBuffer === false){
             return null;
         }
 
         return json_decode($rspBuffer, true);
+    }
+
+    /**
+     * close socket
+     */
+    public function __destruct()
+    {
+        socket_close($this->socket);
     }
 
 }
