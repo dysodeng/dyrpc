@@ -3,7 +3,7 @@ namespace DyRpc\JsonRpc;
 
 class Client
 {
-    private $socket = null;
+    private $conn = null;
 
     /**
      * JsonRpcClient constructor.
@@ -13,10 +13,9 @@ class Client
      */
     public function __construct($host, $port)
     {
-        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if(socket_connect($this->socket, $host, $port) === false){
-            socket_close($this->socket);
-            throw new \Exception('create socket error: ', socket_last_error());
+        $this->conn = fsockopen($host, $port, $errno, $error, 3);
+        if (!$this->conn) {
+            throw new \Exception('connect socket error: '.$error, $errno);
         }
     }
 
@@ -29,35 +28,23 @@ class Client
      */
     public function call($method, array $params = [])
     {
-        $write = socket_write($this->socket, json_encode([
+        $error = fwrite($this->conn, json_encode([
                 'method' => $method,
                 'params' => array($params),
                 'id'     => 0,
             ])."\n");
-
-        if($write === false){
-            socket_close($this->socket);
-            $message = sprintf("write socket error: %s", socket_strerror(socket_last_error()));
-            throw new \Exception($message, socket_last_error());
+        if ($error === false) {
+            return null;
         }
 
-        socket_set_option($this->socket, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>5, 'usec'=>0]);
-
-        $rspBuffer = socket_read($this->socket, 65536);
+        stream_set_timeout($this->conn, 5);
+        $rspBuffer = fgets($this->conn);
 
         if($rspBuffer === false){
             return null;
         }
 
         return json_decode($rspBuffer, true);
-    }
-
-    /**
-     * close socket
-     */
-    public function __destruct()
-    {
-        socket_close($this->socket);
     }
 
 }
